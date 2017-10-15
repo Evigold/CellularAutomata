@@ -1,6 +1,6 @@
 
 //GameBoard code below
-
+function 
 function randomInt(n) {
 	return Math.floor(Math.random() * n);
 }
@@ -184,6 +184,22 @@ Automata.prototype.draw = function (ctx) {
 
 };
 
+function Parameters() {
+	this.pop_size = 100;
+	this.green_bound = .1;
+	this.red_bound = .2;
+	this.death_rate = .01;
+	this.growth_rate = .03;
+	this.decay_rate = .001;
+}
+Parameters.set = function () {
+	this.parameters.pop_size = document.getElementById("pop_size");
+	this.parameters.green_bound = document.getElementById("green_bound");
+	this.parameters.red_bound = document.getElementById("red_bound");
+	this.parameters.death_rate = document.getElementById("death_rate");
+	this.parameters.growth_rate = document.getElementById("growth_rate");
+	this.parameters.decay_rate = document.getElementById("decay_rate");
+}
 
 //the "main" code begins here
 

@@ -13,5 +13,15 @@
 
     <canvas id="gameWorld" width="800" height="800" style="border: 1px solid white; background: black"></canvas>
     <canvas id="statCanvas" width="200" height="800" style="border: 1px solid white; background: white"></canvas>
+	<div id="environment">
+		<p>Parameters</p>
+		<input type="text" id="pop_size" value="100"/>Starting Population Size<br/>
+		<input type="text" id="green_bound" value=".1"/>Percentage Green (must be lower than Percentage Red)<br/>
+		<input type="text" id="red_bound" value=".2"/>Percentage Green (must be lower than Percentage Red)<br/>
+		<input type="text" id="death_rate" value=".01"/>Chance of Dying<br/>
+		<input type="text" id="growth_rate" value=".03"/>Growth Rate<br/>
+		<input type="text" id="decay_rate" value=".001"/>Decay Rate<br/>
+	</div>
+	<button type="button" onclick=this.Parameters.set()>Reset</button>
 </body>
 </html>
