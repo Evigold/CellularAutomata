@@ -184,7 +184,7 @@ Automata.prototype.draw = function (ctx) {
 
 };
 
-function Parameters() {
+var Parameters = function () {
 	this.pop_size = 100;
 	this.green_bound = .1;
 	this.red_bound = .2;
@@ -193,12 +193,12 @@ function Parameters() {
 	this.decay_rate = .001;
 }
 Parameters.set = function () {
-	this.parameters.pop_size = document.getElementById("pop_size");
-	this.parameters.green_bound = document.getElementById("green_bound");
-	this.parameters.red_bound = document.getElementById("red_bound");
-	this.parameters.death_rate = document.getElementById("death_rate");
-	this.parameters.growth_rate = document.getElementById("growth_rate");
-	this.parameters.decay_rate = document.getElementById("decay_rate");
+	Parameters.pop_size = document.getElementById("pop_size");
+	Parameters.green_bound = document.getElementById("green_bound");
+	Parameters.red_bound = document.getElementById("red_bound");
+	Parameters.death_rate = document.getElementById("death_rate");
+	Parameters.growth_rate = document.getElementById("growth_rate");
+	Parameters.decay_rate = document.getElementById("decay_rate");
 }
 
 //the "main" code begins here
