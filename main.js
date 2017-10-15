@@ -1,12 +1,24 @@
 
 //GameBoard code below
-function 
 function randomInt(n) {
 	return Math.floor(Math.random() * n);
 }
 
 function rgb(r, g, b) {
 	return "rgb(" + r + "," + g + "," + b + ")";
+}
+
+
+var Parameters = function () {
+	this.max_hits = 50;
+	this.genome = .5;
+	this.pop_size = 100;
+	this.green_bound = .1;
+	this.red_bound = .2;
+	this.death_rate = .01;
+	this.growth_rate = .03;
+	this.decay_rate = .001;
+	this.pause = 0;
 }
 
 function Agent(game, x, y, agent) {
@@ -18,13 +30,13 @@ function Agent(game, x, y, agent) {
 		console.log(this.genome);
 	}
 	else {
-		this.genome = 0.5;
+		this.genome = Parameters.genome;
 	}
 
 	var val = Math.floor(256 * this.genome);
 	this.color = rgb(val,val,val);
 
-	this.maxHits = 50;
+	this.maxHits = Parameters.max_hits;
 	this.hits = this.maxHits;
 
 	Entity.call(this, game, x, y);
@@ -64,7 +76,7 @@ Agent.prototype.update = function () {
 	}
 
 	// did I die?
-	if (this.hits < 1 || Math.random() < 0.01) {
+	if (this.hits < 1 || Math.random() < Parameters.death_rate) {
 		this.dead = true;
 	}
 
@@ -86,8 +98,8 @@ function Cell(game,x,y) {
 	this.game = game;
 
 	var color = Math.random();
-	var green = 0.1;
-	var red = 0.2;
+	var green = Parameters.green_bound;
+	var red = Parameters.red_bound;
 	if (color < green) this.color = "Green";
 	else if (color < red) this.color = "Red";
 	else this.color = "Black";
@@ -97,8 +109,8 @@ Cell.prototype = new Entity();
 Cell.prototype.constructor = Cell;
 
 Cell.prototype.update = function () {
-	var growthRate = 0.03;
-	var decayRate = 0.001;
+	var growthRate = Parameters.growth_rate;
+	var decayRate = Parameters.decay_rate;
 	if (this.color !== "Black" && this.color !== "White" && (Math.random() < growthRate)) {
 		var newX = (this.x + randomInt(3) - 1 + this.game.board.dimension) % this.game.board.dimension;
 		var newY = (this.y + randomInt(3) - 1 + this.game.board.dimension) % this.game.board.dimension;
@@ -111,7 +123,7 @@ Cell.prototype.update = function () {
 
 function Automata(game) {
 	this.dimension = 100;
-	this.populationSize = 100;
+	this.populationSize = Parameters.pop_size;
 	this.agents = [];
 	// create board
 	this.board = [];
@@ -184,14 +196,6 @@ Automata.prototype.draw = function (ctx) {
 
 };
 
-var Parameters = function () {
-	this.pop_size = 100;
-	this.green_bound = .1;
-	this.red_bound = .2;
-	this.death_rate = .01;
-	this.growth_rate = .03;
-	this.decay_rate = .001;
-}
 Parameters.set = function () {
 	Parameters.pop_size = document.getElementById("pop_size");
 	Parameters.green_bound = document.getElementById("green_bound");
@@ -201,6 +205,15 @@ Parameters.set = function () {
 	Parameters.decay_rate = document.getElementById("decay_rate");
 }
 
+var Pause = function () {
+	if (Parameters.pause) {
+		Parameters.pause = 0;
+		gameEngine.pause = false;
+	} else {
+		Parameters.pause = 1;
+		gameEngine.pause = true;
+	}
+}
 //the "main" code begins here
 
 var ASSET_MANAGER = new AssetManager();
