@@ -175,7 +175,7 @@ Automata.prototype.update = function () {
 
 };
 
-Automata.prototype.draw = function (ctx, ctx2) {
+Automata.prototype.draw = function (ctx) {
 	var size = 8;
 	for (var i = 0; i < this.dimension; i++) {
 		for (var j = 0; j < this.dimension; j++) {
@@ -191,8 +191,7 @@ Automata.prototype.draw = function (ctx, ctx2) {
 		ctx.beginPath();
 		ctx.arc((this.agents[i].x * size) + (size / 2), (this.agents[i].y * size) + (size / 2), (size / 2), 0, 2 * Math.PI, false);
 		ctx.fill();
-		ctx2.fillStyle = cell.color;
-		ctx2.fillRect(i * size, i * size, size, size);
+		ctx.fillRect((i + 800), i, 4, 4);
 	}
 
 
@@ -229,16 +228,13 @@ ASSET_MANAGER.downloadAll(function () {
 	var canvas = document.getElementById('gameWorld');
 	var ctx = canvas.getContext('2d');
 
-	var statCanvas = document.getElementById('statCanvas');
-	var ctx2 = statCanvas.getContext('2d');
-
 	var gameEngine = new GameEngine();
 	var automata = new Automata(gameEngine);
 
 
 	gameEngine.addEntity(automata);
 	gameEngine.board = automata;
-	gameEngine.init(ctx, ctx2);
+	gameEngine.init(ctx);
 	gameEngine.start();
 
 });
