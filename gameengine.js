@@ -107,10 +107,6 @@ GameEngine.prototype.draw = function () {
     for (var i = 0; i < this.entities.length; i++) {
         this.entities[i].draw(this.ctx, this.ctx2);
     }
-    var length = this.entities.length.toString();
-    this.ctx2.font="24px Arial";
-    this.ctx2.fillText(length, 50, 50);
-    this.ctx.restore();
 }
 
 GameEngine.prototype.update = function () {
