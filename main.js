@@ -177,6 +177,7 @@ Automata.prototype.update = function () {
 
 Automata.prototype.draw = function (ctx) {
 	var size = 8;
+	var colors = [];
 	for (var i = 0; i < this.dimension; i++) {
 		for (var j = 0; j < this.dimension; j++) {
 			var cell = this.board[i][j];
@@ -191,9 +192,27 @@ Automata.prototype.draw = function (ctx) {
 		ctx.beginPath();
 		ctx.arc((this.agents[i].x * size) + (size / 2), (this.agents[i].y * size) + (size / 2), (size / 2), 0, 2 * Math.PI, false);
 		ctx.fill();
-		ctx.fillRect((i + 800), i, 4, 4);
+		colors.push(this.agents[i].color);
 	}
-
+	
+	colors.sort();
+	var x_disp = 800;
+	var disp_size = 8;
+	var count = 0;
+	for (var i = 0; i < colors.length; i++) {
+		for (var j = 0; j < 50; j++) {
+			//Make filled in rectangle.
+			ctx.beginPath();
+			ctx.fillStyle = colors[count];
+			ctx.fillRect((j * disp_size) + x_disp, i * disp_size, disp_size, disp_size);
+			count++;
+			//Add border.
+			ctx.beginPath();
+			ctx.strokeStyle = "black";
+			ctx.rect((j * disp_size) + x_disp, i * disp_size, disp_size, disp_size);
+			
+		}
+	}
 
 };
 
