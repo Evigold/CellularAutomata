@@ -217,12 +217,23 @@ Automata.prototype.draw = function (ctx) {
 };
 
 function setParameters() {
+	var canvas = document.getElementById('gameWorld');
+	var ctx = canvas.getContext('2d');
+
+	var gameEngine = new GameEngine();
+	var automata = new Automata(gameEngine);
+	
 	parameters.pop_size = document.getElementById("pop_size");
 	parameters.green_bound = document.getElementById("green_bound");
 	parameters.red_bound = document.getElementById("red_bound");
 	parameters.death_rate = document.getElementById("death_rate");
 	parameters.growth_rate = document.getElementById("growth_rate");
 	parameters.decay_rate = document.getElementById("decay_rate");
+	
+	gameEngine.addEntity(automata);
+	gameEngine.board = automata;
+	gameEngine.init(ctx);
+	gameEngine.start();
 }
 
 var Pause = function () {
