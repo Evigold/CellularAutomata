@@ -9,6 +9,8 @@ function rgb(r, g, b) {
 }
 
 
+var gameEngine = new GameEngine();
+
 var parameters = {
 		max_hits: 50,
 		genome: .5,
@@ -197,7 +199,7 @@ Automata.prototype.draw = function (ctx) {
 	
 	colors.sort();
 	var x_disp = 800;
-	var disp_size = 8;
+	var disp_size = 800 / colors.length;
 	var count = 0;
 	for (var i = 0; i < colors.length; i++) {
 		for (var j = 0; j < 50; j++) {
@@ -220,7 +222,6 @@ function setParameters() {
 	var canvas = document.getElementById('gameWorld');
 	var ctx = canvas.getContext('2d');
 
-	var gameEngine = new GameEngine();
 	var automata = new Automata(gameEngine);
 	
 	parameters.pop_size = document.getElementById("pop_size");
@@ -230,20 +231,9 @@ function setParameters() {
 	parameters.growth_rate = document.getElementById("growth_rate");
 	parameters.decay_rate = document.getElementById("decay_rate");
 	
+	gameEngine.entities = [];
 	gameEngine.addEntity(automata);
-	gameEngine.board = automata;
-	gameEngine.init(ctx);
-	gameEngine.start();
-}
-
-var Pause = function () {
-	if (Parameters.pause) {
-		Parameters.pause = 0;
-		gameEngine.pause = false;
-	} else {
-		Parameters.pause = 1;
-		gameEngine.pause = true;
-	}
+	
 }
 //the "main" code begins here
 
@@ -258,7 +248,6 @@ ASSET_MANAGER.downloadAll(function () {
 	var canvas = document.getElementById('gameWorld');
 	var ctx = canvas.getContext('2d');
 
-	var gameEngine = new GameEngine();
 	var automata = new Automata(gameEngine);
 
 
