@@ -196,26 +196,46 @@ Automata.prototype.draw = function (ctx) {
 		ctx.fill();
 		colors.push(this.agents[i].color);
 	}
-	
+
 	colors.sort();
-	var x_disp = 800;
-	var disp_size = 800 / colors.length;
-	var count = 0;
+	
+	//Population graphing section.
+	var start_x = 800;
+	var start_y = 0;
+	var graph_height = 400;
+	var graph_width = 200;
+	var size = 10;
+	var row = 0;
+	var col = 0;
+	
+	//Set up graphing areas.
+	for (var i = 0; i < 2; i++) {
+		ctx.fillStyle = "white";
+		ctx.fillRect(start_x, start_y + (i * graph_height), graph_width, graph_height);
+		ctx.beginPath();
+		ctx.strokeStyle = "black";
+		ctx.rect(start_x, start_y + (i * graph_height), graph_width, graph_height);
+		ctx.stroke();
+	}
+	
+	//Graph population by color
 	for (var i = 0; i < colors.length; i++) {
-		for (var j = 0; j < 50; j++) {
-			//Make filled in rectangle.
-			ctx.beginPath();
-			ctx.fillStyle = colors[count];
-			ctx.fillRect((j * disp_size) + x_disp, i * disp_size, disp_size, disp_size);
-			count++;
-			//Add border.
-			ctx.beginPath();
-			ctx.strokeStyle = "black";
-			ctx.rect((j * disp_size) + x_disp, i * disp_size, disp_size, disp_size);
-			
+		//Make filled in rectangle.
+		ctx.fillStyle = colors[i];
+		ctx.fillRect(start_x + (row * size), start_y + (col * size), size, size);
+		//Add border.
+		ctx.beginPath();
+		ctx.strokeStyle = "black";
+		ctx.rect(start_x + (row * size), start_y + (col * size), size, size);
+		ctx.stroke();
+		col++;
+		if (col > 9) {
+			row++;
+			col = 0;
 		}
 	}
-
+	
+	//Graph population over time.
 };
 
 function setParameters() {
@@ -223,17 +243,17 @@ function setParameters() {
 	var ctx = canvas.getContext('2d');
 
 	var automata = new Automata(gameEngine);
-	
+
 	parameters.pop_size = document.getElementById("pop_size");
 	parameters.green_bound = document.getElementById("green_bound");
 	parameters.red_bound = document.getElementById("red_bound");
 	parameters.death_rate = document.getElementById("death_rate");
 	parameters.growth_rate = document.getElementById("growth_rate");
 	parameters.decay_rate = document.getElementById("decay_rate");
-	
+
 	gameEngine.entities = [];
 	gameEngine.addEntity(automata);
-	
+
 }
 //the "main" code begins here
 
