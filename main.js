@@ -11,6 +11,7 @@ function rgb(r, g, b) {
 
 var gameEngine = new GameEngine();
 
+var pop_hist = [];
 var parameters = {
 		max_hits: 50,
 		genome: .5,
@@ -198,7 +199,7 @@ Automata.prototype.draw = function (ctx) {
 	}
 
 	colors.sort();
-	
+
 	//Population graphing section.
 	var start_x = 800;
 	var start_y = 0;
@@ -207,16 +208,34 @@ Automata.prototype.draw = function (ctx) {
 	var size = 10;
 	var row = 0;
 	var col = 0;
-	
+
+	//Update history array.
+	pop_hist.push(this.agents.length);
+
 	//Set up graphing areas.
-	for (var i = 0; i < 2; i++) {
-		ctx.fillStyle = "white";
-		ctx.fillRect(start_x, start_y + (i * graph_height), graph_width, graph_height);
-		ctx.beginPath();
-		ctx.strokeStyle = "black";
-		ctx.rect(start_x, start_y + (i * graph_height), graph_width, graph_height);
-		ctx.stroke();
-	}
+	//Population blobs area.
+	ctx.fillStyle = "white";
+	ctx.fillRect(start_x, start_y, graph_width, graph_height);
+	ctx.beginPath();
+	ctx.strokeStyle = "black";
+	ctx.rect(start_x, start_y, graph_width, graph_height);
+	ctx.stroke();
+
+	//Population print out area.
+	ctx.fillStyle = "white";
+	ctx.fillRect(start_x, start_y + graph_height, graph_width, graph_height / 20);
+	ctx.beginPath();
+	ctx.strokeStyle = "black";
+	ctx.rect(start_x, start_y + graph_height, graph_width, graph_height / 20);
+	ctx.stroke();
+	
+	//Population over time graph area.
+	ctx.fillStyle = "white";
+	ctx.fillRect(start_x, start_y + graph_height + (graph_height / 20), graph_width, graph_height - graph_height / 20);
+	ctx.beginPath();
+	ctx.strokeStyle = "black";
+	ctx.rect(start_x, start_y + graph_height + (graph_height / 20), graph_width, graph_height - graph_height / 20);
+	ctx.stroke();
 	
 	//Graph population by color
 	for (var i = 0; i < colors.length; i++) {
@@ -234,8 +253,14 @@ Automata.prototype.draw = function (ctx) {
 			row = 0;
 		}
 	}
-	
+
+	//Print population size.
+	ctx.font = "15px Arial";
+	ctx.fillText("Population Size: " + this.agents.length, start_x + 5, start_y + 415);
+
 	//Graph population over time.
+	ctx.fillText("Population Over Time Graph", start_x + 5, start_y + 435);
+	graph(ctx, pop_hist, 400, pop_hist.length, start_x, start_y + 400, graph_width, graph_height, "black");
 };
 
 function setParameters() {
@@ -244,12 +269,12 @@ function setParameters() {
 
 	var automata = new Automata(gameEngine);
 
-	parameters.pop_size = document.getElementById("pop_size");
-	parameters.green_bound = document.getElementById("green_bound");
-	parameters.red_bound = document.getElementById("red_bound");
-	parameters.death_rate = document.getElementById("death_rate");
-	parameters.growth_rate = document.getElementById("growth_rate");
-	parameters.decay_rate = document.getElementById("decay_rate");
+	parameters.pop_size = parseInt(document.getElementById("pop_size").value);
+	parameters.green_bound = parseFloat(document.getElementById("green_bound").value);
+	parameters.red_bound = parseFloat(document.getElementById("red_bound").value);
+	parameters.death_rate = parseFloat(document.getElementById("death_rate").value);
+	parameters.growth_rate = parseFloat(document.getElementById("growth_rate").value);
+	parameters.decay_rate = parseFloat(document.getElementById("decay_rate").value);
 
 	gameEngine.entities = [];
 	gameEngine.addEntity(automata);
@@ -257,26 +282,26 @@ function setParameters() {
 }
 
 function graph(ctx, arr, max, count, x, y, width, height, style, text) {
-    if(text && arr.length > 0) {
-        ctx.fillStyle = "Black";
-        var current = parseFloat(arr[arr.length - 1].toFixed(3));
-        ctx.fillText(text + ": " + current + " Max: " + parseFloat(max.toFixed(3)), x, y + 10);
-    }
+	if(text && arr.length > 0) {
+		ctx.fillStyle = "Black";
+		var current = parseFloat(arr[arr.length - 1].toFixed(3));
+		ctx.fillText(text + ": " + current + " Max: " + parseFloat(max.toFixed(3)), x, y + 10);
+	}
 
-    ctx.strokeStyle = style;
-    var px = 0;
-    var step = width / count;
-    var range = max/height;
-    var startY = y + height;
+	ctx.strokeStyle = style;
+	var px = 0;
+	var step = width / count;
+	var range = max/height;
+	var startY = y + height;
 
-    var i = Math.max(0, arr.length - count); //display the last (max) events
-    ctx.moveTo(x, startY - arr[i]/height);
-    ctx.beginPath();
-    while(i < arr.length) {
-        ctx.lineTo(x + px++ * step, startY - arr[i]/range);
-        i++;
-    }
-    ctx.stroke();
+	var i = Math.max(0, arr.length - count); //display the last (max) events
+	ctx.moveTo(x, startY - arr[i]/height);
+	ctx.beginPath();
+	while(i < arr.length) {
+		ctx.lineTo(x + px++ * step, startY - arr[i]/range);
+		i++;
+	}
+	ctx.stroke();
 }
 //the "main" code begins here
 
