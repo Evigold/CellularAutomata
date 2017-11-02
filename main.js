@@ -12,6 +12,10 @@ function rgb(r, g, b) {
 var gameEngine = new GameEngine();
 
 var pop_hist = [];
+var red_hist = [];
+var green_hist = [];
+var cycles = 0;
+
 var parameters = {
 		max_hits: 50,
 		genome: .5,
@@ -30,7 +34,7 @@ function Agent(game, x, y, agent) {
 		this.genome = agent.genome + Math.pow(-1, bit) * Math.random() * 0.1;
 		if (this.genome < 0) this.genome = 0;
 		if (this.genome > 1) this.genome = 1;
-		console.log(this.genome);
+		//console.log(this.genome);
 	}
 	else {
 		this.genome = parameters.genome;
@@ -50,7 +54,6 @@ Agent.prototype.constructor = Agent;
 
 Agent.prototype.update = function () {
 	var cell = this.game.board.board[this.x][this.y];
-
 	//console.log(cell.color);
 	// resolve cell
 	if (cell.color === "Red") {
@@ -77,7 +80,6 @@ Agent.prototype.update = function () {
 	} else if (cell.color === "Black") {
 		// safe
 	}
-
 	// did I die?
 	if (this.hits < 1 || Math.random() < parameters.death_rate) {
 		this.dead = true;
@@ -157,7 +159,6 @@ Automata.prototype.update = function () {
 	for (var i = 0; i < this.agents.length; i++) {
 		this.agents[i].update();
 	}
-
 	for (var i = this.agents.length - 1; i >= 0; i--) {
 		if (this.agents[i].dead) {
 			this.agents.splice(i, 1);
@@ -181,15 +182,24 @@ Automata.prototype.update = function () {
 Automata.prototype.draw = function (ctx) {
 	var size = 8;
 	var colors = [];
+	var red_count = 0;
+	var green_count = 0;
+	cycles++;
 	for (var i = 0; i < this.dimension; i++) {
 		for (var j = 0; j < this.dimension; j++) {
 			var cell = this.board[i][j];
 
 			ctx.fillStyle = cell.color;
+			if (cell.color == "Red") {
+				red_count++;
+			} else if (cell.color == "Green") {
+				green_count++;
+			}
 			ctx.fillRect(i * size, j * size, size, size);
 		}
 	}
-
+	red_hist.push(red_count / 10);
+	green_hist.push(green_count / 10);
 	for (var i = 0; i < this.agents.length; i++) {
 		ctx.fillStyle = this.agents[i].color;
 		ctx.beginPath();
@@ -208,33 +218,25 @@ Automata.prototype.draw = function (ctx) {
 	var size = 10;
 	var row = 0;
 	var col = 0;
+	var count = 200;
 
 	//Update history array.
 	pop_hist.push(this.agents.length);
 
 	//Set up graphing areas.
-	//Population blobs area.
+	//Paint background of information area white.
 	ctx.fillStyle = "white";
-	ctx.fillRect(start_x, start_y, graph_width, graph_height);
+	ctx.fillRect(start_x, start_y, 400, 800);
 	ctx.beginPath();
-	ctx.strokeStyle = "black";
-	ctx.rect(start_x, start_y, graph_width, graph_height);
-	ctx.stroke();
 
-	//Population print out area.
-	ctx.fillStyle = "white";
-	ctx.fillRect(start_x, start_y + graph_height, graph_width, graph_height / 20);
-	ctx.beginPath();
+	//Information print out area outline.
 	ctx.strokeStyle = "black";
-	ctx.rect(start_x, start_y + graph_height, graph_width, graph_height / 20);
+	ctx.rect(start_x + 210, start_y, 190, 800);
 	ctx.stroke();
 	
-	//Population over time graph area.
-	ctx.fillStyle = "white";
-	ctx.fillRect(start_x, start_y + graph_height + (graph_height / 20), graph_width, graph_height - graph_height / 20);
-	ctx.beginPath();
+	//Population over time graph area outline.
 	ctx.strokeStyle = "black";
-	ctx.rect(start_x, start_y + graph_height + (graph_height / 20), graph_width, graph_height - graph_height / 20);
+	ctx.rect(start_x, 400, 210, 400);
 	ctx.stroke();
 	
 	//Graph population by color
@@ -254,13 +256,24 @@ Automata.prototype.draw = function (ctx) {
 		}
 	}
 
-	//Print population size.
+	//Print information.
 	ctx.font = "15px Arial";
-	ctx.fillText("Population Size: " + this.agents.length, start_x + 5, start_y + 415);
-
-	//Graph population over time.
-	ctx.fillText("Population Over Time Graph", start_x + 5, start_y + 435);
-	graph(ctx, pop_hist, 400, pop_hist.length, start_x, start_y + 400, graph_width, graph_height, "black");
+	ctx.fillStyle = "black";
+	ctx.fillText("Population Size: " + this.agents.length, start_x + 220, start_y + 15);
+	ctx.fillText("Population Over Time", start_x + 220, start_y + 415);
+	ctx.fillStyle = "red";
+	ctx.fillText("Red Food: " + red_hist[cycles - 1], start_x + 220, start_y + 30);
+	ctx.fillText("Red Food Over Time", start_x + 220, start_y + 430);
+	ctx.fillStyle = "green";
+	ctx.fillText("Green Food: " + green_hist[cycles - 1], start_x + 220, start_y + 45);
+	ctx.fillText("Green Food Over Time", start_x + 220, start_y + 445);
+	
+	//Graph population over time. Bound to increments 200 or less.
+	graph(ctx, pop_hist, 400, count, start_x, start_y + 400, graph_width, graph_height, "black");
+	//Graph green food over time. Bound to increments 200 or less.
+	graph(ctx, green_hist, 400, count, start_x, start_y + 400, graph_width, graph_height, "green");
+	//Graph red food over time. Bound to increments 200 or less.
+	graph(ctx, red_hist, 400, count, start_x, start_y + 400, graph_width, graph_height, "red");
 };
 
 function setParameters() {
@@ -278,6 +291,7 @@ function setParameters() {
 
 	gameEngine.entities = [];
 	gameEngine.addEntity(automata);
+	gameEngine.board = automata;
 
 }
 
@@ -290,6 +304,7 @@ function graph(ctx, arr, max, count, x, y, width, height, style, text) {
 
 	ctx.strokeStyle = style;
 	var px = 0;
+
 	var step = width / count;
 	var range = max/height;
 	var startY = y + height;
@@ -315,13 +330,7 @@ ASSET_MANAGER.downloadAll(function () {
 	console.log("starting up da sheild");
 	var canvas = document.getElementById('gameWorld');
 	var ctx = canvas.getContext('2d');
-
-	var automata = new Automata(gameEngine);
-
-
-	gameEngine.addEntity(automata);
-	gameEngine.board = automata;
+	setParameters();
 	gameEngine.init(ctx);
 	gameEngine.start();
-
 });
