@@ -16,6 +16,26 @@ var red_hist = [];
 var green_hist = [];
 var cycles = 0;
 
+function download(filename) {
+	console.log("Potatoe.");
+    var pom = document.createElement('a');
+	filename = "current.csv";
+	
+	var megaArray = [];
+	megaArray.push(pop_hist.join(','));
+	megaArray.push(red_hist.join(','));
+	megaArray.push(green_hist.join(','));
+	
+	var blob = new Blob([megaArray.join('\n')], {type: 'text/csv'});
+    var url = window.URL.createObjectURL(blob);
+    pom.setAttribute('href', url);
+    pom.setAttribute('download', filename);
+    pom.click();
+}
+
+function download() {
+    
+}
 var parameters = {
 		max_hits: 50,
 		genome: .5,
@@ -274,6 +294,15 @@ Automata.prototype.draw = function (ctx) {
 	graph(ctx, green_hist, 400, count, start_x, start_y + 400, graph_width, graph_height, "green");
 	//Graph red food over time. Bound to increments 200 or less.
 	graph(ctx, red_hist, 400, count, start_x, start_y + 400, graph_width, graph_height, "red");
+	
+	if (cycles % 100 == 0) {
+		var filename = "CellularAutomata";
+		var currentDate = new Date();
+		filename+=(count.toString() + currentDate.getDay() + (currentDate.getMonth() + 1) 
+				+ currentDate.getFullYear() + ".csv");
+		console.log("Pumpkin.");
+		download(filename);
+	}
 };
 
 function setParameters() {
@@ -296,6 +325,7 @@ function setParameters() {
 }
 
 function graph(ctx, arr, max, count, x, y, width, height, style, text) {
+
 	if(text && arr.length > 0) {
 		ctx.fillStyle = "Black";
 		var current = parseFloat(arr[arr.length - 1].toFixed(3));
@@ -317,6 +347,12 @@ function graph(ctx, arr, max, count, x, y, width, height, style, text) {
 		i++;
 	}
 	ctx.stroke();
+}
+
+
+
+function saveInfo() {
+	
 }
 //the "main" code begins here
 
