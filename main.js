@@ -17,9 +17,7 @@ var green_hist = [];
 var cycles = 0;
 
 function download(filename) {
-	console.log("Potatoe.");
     var pom = document.createElement('a');
-	filename = "current.csv";
 	
 	var megaArray = [];
 	megaArray.push(pop_hist.join(','));
@@ -33,9 +31,6 @@ function download(filename) {
     pom.click();
 }
 
-function download() {
-    
-}
 var parameters = {
 		max_hits: 50,
 		genome: .5,
@@ -295,7 +290,7 @@ Automata.prototype.draw = function (ctx) {
 	//Graph red food over time. Bound to increments 200 or less.
 	graph(ctx, red_hist, 400, count, start_x, start_y + 400, graph_width, graph_height, "red");
 	
-	if (cycles % 100 == 0) {
+	if (cycles % 100 == 0 && document.getElementById("download").checked) {
 		var filename = "CellularAutomata";
 		var currentDate = new Date();
 		filename+=(count.toString() + currentDate.getDay() + (currentDate.getMonth() + 1) 
@@ -312,6 +307,7 @@ function setParameters() {
 	var automata = new Automata(gameEngine);
 
 	parameters.pop_size = parseInt(document.getElementById("pop_size").value);
+	parameters.max_hits = parseInt(document.getElementById("max_hits").value);
 	parameters.green_bound = parseFloat(document.getElementById("green_bound").value);
 	parameters.red_bound = parseFloat(document.getElementById("red_bound").value);
 	parameters.death_rate = parseFloat(document.getElementById("death_rate").value);
@@ -350,10 +346,6 @@ function graph(ctx, arr, max, count, x, y, width, height, style, text) {
 }
 
 
-
-function saveInfo() {
-	
-}
 //the "main" code begins here
 
 var ASSET_MANAGER = new AssetManager();

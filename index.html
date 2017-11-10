@@ -15,11 +15,13 @@
 	<div id="environment">
 		<p>Parameters</p>
 		<input type="text" id="pop_size" value="100"/>Starting Population Size<br/>
+		<input type="text" id="max_hits" value="50"/>Maximum Hitpoints<br/>
 		<input type="text" id="green_bound" value=".1"/>Percentage Green (must be lower than Percentage Red)<br/>
 		<input type="text" id="red_bound" value=".2"/>Percentage Red (must be higher than Percentage Green)<br/>
 		<input type="text" id="death_rate" value=".01"/>Chance of Dying<br/>
 		<input type="text" id="growth_rate" value=".03"/>Growth Rate<br/>
 		<input type="text" id="decay_rate" value=".001"/>Decay Rate<br/>
+		<input type="checkbox" id="download"/>Download<br />
 	</div>
 	<button type="button" onclick=setParameters()>Reset</button>
 </body>
