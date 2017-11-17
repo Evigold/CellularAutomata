@@ -17,18 +17,18 @@ var green_hist = [];
 var cycles = 0;
 
 function download(filename) {
-    var pom = document.createElement('a');
-	
+	var pom = document.createElement('a');
+
 	var megaArray = [];
 	megaArray.push(pop_hist.join(','));
 	megaArray.push(red_hist.join(','));
 	megaArray.push(green_hist.join(','));
-	
+
 	var blob = new Blob([megaArray.join('\n')], {type: 'text/csv'});
-    var url = window.URL.createObjectURL(blob);
-    pom.setAttribute('href', url);
-    pom.setAttribute('download', filename);
-    pom.click();
+	var url = window.URL.createObjectURL(blob);
+	pom.setAttribute('href', url);
+	pom.setAttribute('download', filename);
+	pom.click();
 }
 
 var parameters = {
@@ -40,7 +40,9 @@ var parameters = {
 		death_rate: .01,
 		growth_rate: .03,
 		decay_rate: .001,
-		pause: 0
+		pause: 0,
+		birth_rate: .1,
+		button_clicked: 0
 }
 
 function Agent(game, x, y, agent) {
@@ -87,7 +89,7 @@ Agent.prototype.update = function () {
 		else this.hits--;
 		//else cell.color = "Black";
 	} else if (cell.color === "White") {
-		if (Math.random() < 0.10) {
+		if (Math.random() < parameters.birth_rate) {
 			var agent = new Agent(this.game, this.x, this.y, this);
 			this.game.board.agents.push(agent);
 		}
@@ -171,24 +173,28 @@ Automata.prototype = new Entity();
 Automata.prototype.constructor = Automata;
 
 Automata.prototype.update = function () {
-	for (var i = 0; i < this.agents.length; i++) {
-		this.agents[i].update();
-	}
-	for (var i = this.agents.length - 1; i >= 0; i--) {
-		if (this.agents[i].dead) {
-			this.agents.splice(i, 1);
+
+	if (cycles % 100 == 0 && document.getElementById("download").checked && this.agents.length <= 0) {
+		var filename = "CellularAutomata";
+		var currentDate = new Date();
+		filename+=(cycles.toString() + currentDate.getDay() + (currentDate.getMonth() + 1) 
+				+ currentDate.getFullYear() + ".csv");
+		download(filename);
+
+	} else {
+		cycles++;
+		for (var i = 0; i < this.agents.length; i++) {
+			this.agents[i].update();
 		}
-	}
-
-	//while (this.agents.length < this.populationSize) {
-	//    var parent = this.agents[randomInt(this.agents.length)];
-	//    var agent = new Agent(this.game, parent.x, parent.y, parent);
-	//    this.agents.push(agent);
-	//}
-
-	for (var i = 0; i < this.dimension; i++) {
-		for (var j = 0; j < this.dimension; j++) {
-			this.board[i][j].update();
+		for (var i = this.agents.length - 1; i >= 0; i--) {
+			if (this.agents[i].dead) {
+				this.agents.splice(i, 1);
+			}
+		}
+		for (var i = 0; i < this.dimension; i++) {
+			for (var j = 0; j < this.dimension; j++) {
+				this.board[i][j].update();
+			}
 		}
 	}
 
@@ -199,7 +205,6 @@ Automata.prototype.draw = function (ctx) {
 	var colors = [];
 	var red_count = 0;
 	var green_count = 0;
-	cycles++;
 	for (var i = 0; i < this.dimension; i++) {
 		for (var j = 0; j < this.dimension; j++) {
 			var cell = this.board[i][j];
@@ -248,12 +253,12 @@ Automata.prototype.draw = function (ctx) {
 	ctx.strokeStyle = "black";
 	ctx.rect(start_x + 210, start_y, 190, 800);
 	ctx.stroke();
-	
+
 	//Population over time graph area outline.
 	ctx.strokeStyle = "black";
 	ctx.rect(start_x, 400, 210, 400);
 	ctx.stroke();
-	
+
 	//Graph population by color
 	for (var i = 0; i < colors.length; i++) {
 		//Make filled in rectangle.
@@ -275,6 +280,8 @@ Automata.prototype.draw = function (ctx) {
 	ctx.font = "15px Arial";
 	ctx.fillStyle = "black";
 	ctx.fillText("Population Size: " + this.agents.length, start_x + 220, start_y + 15);
+	ctx.fillText("Cycles: " + cycles, start_x + 220, start_y + 60);
+	ctx.fillText("Birth Rate: " + parameters.birth_rate, start_x + 220, start_y + 75);
 	ctx.fillText("Population Over Time", start_x + 220, start_y + 415);
 	ctx.fillStyle = "red";
 	ctx.fillText("Red Food: " + red_hist[cycles - 1], start_x + 220, start_y + 30);
@@ -282,22 +289,19 @@ Automata.prototype.draw = function (ctx) {
 	ctx.fillStyle = "green";
 	ctx.fillText("Green Food: " + green_hist[cycles - 1], start_x + 220, start_y + 45);
 	ctx.fillText("Green Food Over Time", start_x + 220, start_y + 445);
-	
 	//Graph population over time. Bound to increments 200 or less.
 	graph(ctx, pop_hist, 400, count, start_x, start_y + 400, graph_width, graph_height, "black");
 	//Graph green food over time. Bound to increments 200 or less.
 	graph(ctx, green_hist, 400, count, start_x, start_y + 400, graph_width, graph_height, "green");
 	//Graph red food over time. Bound to increments 200 or less.
 	graph(ctx, red_hist, 400, count, start_x, start_y + 400, graph_width, graph_height, "red");
-	
-	if (cycles % 100 == 0 && document.getElementById("download").checked) {
-		var filename = "CellularAutomata";
-		var currentDate = new Date();
-		filename+=(count.toString() + currentDate.getDay() + (currentDate.getMonth() + 1) 
-				+ currentDate.getFullYear() + ".csv");
-		console.log("Pumpkin.");
-		download(filename);
-	}
+
+
+};
+
+document.getElementById("reset").onclick = function () {
+	parameters.button_clicked = 1;
+	setParameters();
 };
 
 function setParameters() {
@@ -305,14 +309,29 @@ function setParameters() {
 	var ctx = canvas.getContext('2d');
 
 	var automata = new Automata(gameEngine);
-
-	parameters.pop_size = parseInt(document.getElementById("pop_size").value);
-	parameters.max_hits = parseInt(document.getElementById("max_hits").value);
-	parameters.green_bound = parseFloat(document.getElementById("green_bound").value);
-	parameters.red_bound = parseFloat(document.getElementById("red_bound").value);
-	parameters.death_rate = parseFloat(document.getElementById("death_rate").value);
-	parameters.growth_rate = parseFloat(document.getElementById("growth_rate").value);
-	parameters.decay_rate = parseFloat(document.getElementById("decay_rate").value);
+	if (parameters.button_clicked) {
+		parameters.pop_size = parseInt(document.getElementById("pop_size").value);
+		parameters.max_hits = parseInt(document.getElementById("max_hits").value);
+		parameters.green_bound = parseFloat(document.getElementById("green_bound").value);
+		parameters.red_bound = parseFloat(document.getElementById("red_bound").value);
+		parameters.death_rate = parseFloat(document.getElementById("death_rate").value);
+		parameters.growth_rate = parseFloat(document.getElementById("growth_rate").value);
+		parameters.decay_rate = parseFloat(document.getElementById("decay_rate").value);
+		parameters.birth_rate = parseFloat(document.getElementById("birth_rate").value);
+		parameters.button_clicked = 0;
+	} else {
+		parameters.max_hits = 50;
+		parameters.genome = .5;
+		parameters.pop_size = 100;
+		parameters.green_bound = .1;
+		parameters.red_bound = .2;
+		parameters.death_rate = .01;
+		parameters.growth_rate = .03;
+		parameters.decay_rate = .001;
+		parameters.pause = 0;
+		parameters.birth_rate = .1;
+	}
+	
 
 	gameEngine.entities = [];
 	gameEngine.addEntity(automata);
