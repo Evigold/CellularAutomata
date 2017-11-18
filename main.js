@@ -298,12 +298,10 @@ Automata.prototype.draw = function (ctx) {
 
 
 };
-
-document.getElementById("reset").onclick = function () {
+function buttonClicked() {
 	parameters.button_clicked = 1;
 	setParameters();
-};
-
+}
 function setParameters() {
 	var canvas = document.getElementById('gameWorld');
 	var ctx = canvas.getContext('2d');
@@ -381,3 +379,6 @@ ASSET_MANAGER.downloadAll(function () {
 	gameEngine.init(ctx);
 	gameEngine.start();
 });
+
+
+
