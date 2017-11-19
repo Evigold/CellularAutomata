@@ -31,19 +31,43 @@ function download(filename) {
 	pom.click();
 }
 
-var parameters = {
-		max_hits: 50,
-		genome: .5,
-		pop_size: 100,
-		green_bound: .1,
-		red_bound: .2,
-		death_rate: .01,
-		growth_rate: .03,
-		decay_rate: .001,
-		pause: 0,
-		birth_rate: .1,
-		button_clicked: 0
+function parametersObject(hits, genome, pop, green, red, death, growth, decay, birth) {
+	this.max_hits=hits;
+	this.genome=genome;
+	this.pop_size=pop;
+	this.green_bound=green;
+	this.red_bound=red;
+	this.death_rate=death;
+	this.growth_rate=growth;
+	this.decay_rate=decay;
+	this.birth_rate=birth;
+	this.button_clicked= 0;
 }
+
+//Array for setting parameters.
+var parameters_array = [];
+//Set array values here, 0th index is starting settings.
+parameters_array.push(new parametersObject(50, .5, 100, .1, .2, .01, .03, .001, .1));
+parameters_array.push(new parametersObject(5, .5, 100, .1, .2, .01, .03, .001, .1));
+parameters_array.push(new parametersObject(500, .5, 100, .1, .2, .01, .03, .001, .1));
+parameters_array.push(new parametersObject(50, .25, 100, .1, .2, .01, .03, .001, .1));
+parameters_array.push(new parametersObject(50, .75, 100, .1, .2, .01, .03, .001, .1));
+parameters_array.push(new parametersObject(50, .5, 10, .1, .2, .01, .03, .001, .1));
+parameters_array.push(new parametersObject(50, .5, 1000, .1, .2, .01, .03, .001, .1));
+parameters_array.push(new parametersObject(50, .5, 100, .1, .3, .01, .03, .001, .1));
+parameters_array.push(new parametersObject(50, .5, 100, .2, .3, .01, .03, .001, .1));
+parameters_array.push(new parametersObject(50, .5, 100, .1, .2, .001, .03, .001, .1));
+parameters_array.push(new parametersObject(50, .5, 100, .1, .2, .1, .03, .001, .1));
+parameters_array.push(new parametersObject(50, .5, 100, .1, .2, .01, .003, .001, .1));
+parameters_array.push(new parametersObject(50, .5, 100, .1, .2, .01, .3, .001, .1));
+parameters_array.push(new parametersObject(50, .5, 100, .1, .2, .01, .03, .0001, .1));
+parameters_array.push(new parametersObject(50, .5, 100, .1, .2, .01, .03, .01, .1));
+parameters_array.push(new parametersObject(50, .5, 100, .1, .2, .01, .03, .001, .01));
+parameters_array.push(new parametersObject(50, .5, 100, .1, .2, .01, .03, .001, .2));
+
+var index = 1;
+
+var parameters = parameters_array[0];
 
 function Agent(game, x, y, agent) {
 	if (agent) {
@@ -302,6 +326,7 @@ function buttonClicked() {
 	parameters.button_clicked = 1;
 	setParameters();
 }
+
 function setParameters() {
 	var canvas = document.getElementById('gameWorld');
 	var ctx = canvas.getContext('2d');
@@ -318,16 +343,12 @@ function setParameters() {
 		parameters.birth_rate = parseFloat(document.getElementById("birth_rate").value);
 		parameters.button_clicked = 0;
 	} else {
-		parameters.max_hits = 50;
-		parameters.genome = .5;
-		parameters.pop_size = 100;
-		parameters.green_bound = .1;
-		parameters.red_bound = .2;
-		parameters.death_rate = .01;
-		parameters.growth_rate = .03;
-		parameters.decay_rate = .001;
-		parameters.pause = 0;
-		parameters.birth_rate = .1;
+		parameters = parameters_array[index];
+		index++;
+		pop_hist = [];
+		red_hist = [];
+		green_hist = [];
+		cycles = 0;
 	}
 	
 
