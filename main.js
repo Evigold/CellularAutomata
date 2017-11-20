@@ -204,6 +204,7 @@ Automata.prototype.update = function () {
 		filename+=(cycles.toString() + currentDate.getDay() + (currentDate.getMonth() + 1) 
 				+ currentDate.getFullYear() + ".csv");
 		download(filename);
+		cycles = 0;
 		setParameters();
 
 	} else {
