@@ -65,7 +65,7 @@ parameters_array.push(new parametersObject(50, .5, 100, .1, .2, .01, .03, .01, .
 parameters_array.push(new parametersObject(50, .5, 100, .1, .2, .01, .03, .001, .01));
 parameters_array.push(new parametersObject(50, .5, 100, .1, .2, .01, .03, .001, .2));
 
-var index = 1;
+var index = 0;
 
 var parameters = parameters_array[0];
 
@@ -198,12 +198,13 @@ Automata.prototype.constructor = Automata;
 
 Automata.prototype.update = function () {
 
-	if (cycles % 100 == 0 && document.getElementById("download").checked && this.agents.length <= 0) {
+	if ((cycles % 1000 == 0 && document.getElementById("download").checked) || this.agents.length <= 0) {
 		var filename = "CellularAutomata";
 		var currentDate = new Date();
 		filename+=(cycles.toString() + currentDate.getDay() + (currentDate.getMonth() + 1) 
 				+ currentDate.getFullYear() + ".csv");
 		download(filename);
+		setParameters();
 
 	} else {
 		cycles++;
@@ -221,7 +222,7 @@ Automata.prototype.update = function () {
 			}
 		}
 	}
-
+	
 };
 
 Automata.prototype.draw = function (ctx) {
@@ -305,7 +306,6 @@ Automata.prototype.draw = function (ctx) {
 	ctx.fillStyle = "black";
 	ctx.fillText("Population Size: " + this.agents.length, start_x + 220, start_y + 15);
 	ctx.fillText("Cycles: " + cycles, start_x + 220, start_y + 60);
-	ctx.fillText("Birth Rate: " + parameters.birth_rate, start_x + 220, start_y + 75);
 	ctx.fillText("Population Over Time", start_x + 220, start_y + 415);
 	ctx.fillStyle = "red";
 	ctx.fillText("Red Food: " + red_hist[cycles - 1], start_x + 220, start_y + 30);
@@ -343,6 +343,7 @@ function setParameters() {
 		parameters.birth_rate = parseFloat(document.getElementById("birth_rate").value);
 		parameters.button_clicked = 0;
 	} else {
+		console.log(index);
 		parameters = parameters_array[index];
 		index++;
 		pop_hist = [];
