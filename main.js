@@ -14,7 +14,8 @@ var gameEngine = new GameEngine();
 var pop_hist = [];
 var red_hist = [];
 var green_hist = [];
-var cycles = 0;
+var cycles = 1;
+var run = 1;
 
 function download(filename) {
 	var pom = document.createElement('a');
@@ -47,15 +48,7 @@ function parametersObject(hits, genome, pop, green, red, death, growth, decay, b
 //Array for setting parameters.
 var parameters_array = [];
 //Set array values here, 0th index is starting settings.
-parameters_array.push(new parametersObject(50, .5, 100, .1, .2, .01, .03, .001, .1));
 parameters_array.push(new parametersObject(5, .5, 100, .1, .2, .01, .03, .001, .1));
-parameters_array.push(new parametersObject(500, .5, 100, .1, .2, .01, .03, .001, .1));
-parameters_array.push(new parametersObject(50, .25, 100, .1, .2, .01, .03, .001, .1));
-parameters_array.push(new parametersObject(50, .75, 100, .1, .2, .01, .03, .001, .1));
-parameters_array.push(new parametersObject(50, .5, 10, .1, .2, .01, .03, .001, .1));
-parameters_array.push(new parametersObject(50, .5, 1000, .1, .2, .01, .03, .001, .1));
-parameters_array.push(new parametersObject(50, .5, 100, .1, .3, .01, .03, .001, .1));
-parameters_array.push(new parametersObject(50, .5, 100, .2, .3, .01, .03, .001, .1));
 parameters_array.push(new parametersObject(50, .5, 100, .1, .2, .001, .03, .001, .1));
 parameters_array.push(new parametersObject(50, .5, 100, .1, .2, .1, .03, .001, .1));
 parameters_array.push(new parametersObject(50, .5, 100, .1, .2, .01, .003, .001, .1));
@@ -198,14 +191,21 @@ Automata.prototype.constructor = Automata;
 
 Automata.prototype.update = function () {
 
-	if ((cycles % 1000 == 0 && document.getElementById("download").checked) || this.agents.length <= 0) {
+	if ((cycles % 5000 == 0 && document.getElementById("download").checked) || this.agents.length <= 0) {
 		var filename = "CellularAutomata";
-		var currentDate = new Date();
-		filename+=(cycles.toString() + currentDate.getDay() + (currentDate.getMonth() + 1) 
-				+ currentDate.getFullYear() + ".csv");
+		filename+=("Run" + run + "Index" + index +".csv");
 		download(filename);
-		cycles = 0;
-		setParameters();
+		run++;
+		if (run == 5) {
+			if (parameters_array.length - index > 1) {
+				setParameters();
+				run = 1;
+			} else {
+				break;
+			}
+		} else {
+			cycles = 1;
+		}
 
 	} else {
 		cycles++;
@@ -350,7 +350,7 @@ function setParameters() {
 		pop_hist = [];
 		red_hist = [];
 		green_hist = [];
-		cycles = 0;
+		cycles = 1;
 	}
 	
 
